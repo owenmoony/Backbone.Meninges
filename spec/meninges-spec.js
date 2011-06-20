@@ -1,31 +1,15 @@
 describe("meninges", function () {
   beforeEach(function () {
     window.Meninges = {};
-    Meninges.Country = Backbone.RelationalModel.extend();
-    Meninges.Author = Backbone.RelationalModel.extend({
-      relations: [
-        {
-          type: Backbone.HasOne,
-          key: 'country',
-          relatedModel: 'Meninges.Country'
-        }
-      ]
+    Backbone.MODELS_NS = Meninges;
+    Meninges.Country = Backbone.MeningesModel.extend();
+    Meninges.Author = Backbone.MeningesModel.extend();
+    Meninges.Links = Backbone.Collection.extend({
+      model: Meninges.Link,
+      proveImALinksCollection: function () {} 
     });
-    Meninges.Link = Backbone.RelationalModel.extend();
-    Meninges.Book = Backbone.RelationalModel.extend({
-      relations: [
-        {
-          type: Backbone.HasMany,
-          key: 'links',
-          relatedModel: 'Meninges.Link'
-        },
-        {
-          type: Backbone.HasOne,
-          key: 'author',
-          relatedModel: 'Meninges.Author'
-        }
-      ]
-    });
+    Meninges.Link = Backbone.MeningesModel.extend();
+    Meninges.Book = Backbone.MeningesModel.extend();
 
     Meninges.BookView = Backbone.FormView.extend({
 
@@ -68,17 +52,16 @@ describe("meninges", function () {
     this.bookView.render();
   });
 
-  describe("backbone relational sanity check", function () {
-    it("should have initialised nested 'HasOne' models", function () {
-      expect(this.book.get('author').get).toBeDefined();
-      expect(this.book.get('author').get('name')).toEqual(this.data.author.name);
-      expect(this.book.get("author").get("country").get("name")).toEqual(this.data.author.country.name);
-    });
+  it("should load the author as a nested model", function () {
+    expect(this.book.get("author").get).toBeDefined();
+  });
 
-    it("should have initialised nested 'HasMany' models", function () {
-      expect(this.book.get("links").at).toBeDefined();
-      expect(this.book.get("links").first().get("uri")).toEqual(this.data.links[0].uri);
-    });
+  it("should load country as a nested model of author", function () {
+    expect(this.book.get("author").get("country").get).toBeDefined();
+  });
+
+  it("should load the links in a Meninges.Links collection", function () {
+    expect(this.book.get("links").proveImALinksCollection).toBeDefined();
   });
 
   describe("html form/relational model synchronisation", function () {

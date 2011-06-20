@@ -20,3 +20,33 @@ Backbone.FormView = {
     return Backbone.View.extend(o);
   }
 };
+
+Backbone.MeningesModel = Backbone.Model.extend({
+  constructor: function() {
+    Backbone.Model.prototype.constructor.apply(this, arguments);
+    if (Backbone.MODELS_NS) {
+      var self = this;
+      _(_(this.attributes).keys()).each(function (key) {
+        var modelClass = key.charAt(0).toUpperCase() + key.substring(1).toLowerCase();
+        if (Backbone.MODELS_NS[modelClass] !== undefined) {
+          var setter = {};
+          setter[key] = new Backbone.MODELS_NS[modelClass](self.attributes[key]);
+          self.set(setter);
+        }
+      });
+    }
+  },
+
+  toJSON: function () {
+    var o = Backbone.Model.prototype.toJSON.apply(this, arguments);
+    if (Backbone.MODELS_NS) {
+      _(_(o).keys()).each(function (key) {
+        var modelClass = key.charAt(0).toUpperCase() + key.substring(1).toLowerCase();
+        if (Backbone.MODELS_NS[modelClass] !== undefined) {
+          o[key] = o[key].toJSON();
+        }
+      });
+    }
+    return o;
+  }
+});
