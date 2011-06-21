@@ -8,7 +8,7 @@ describe("meninges", function () {
     Meninges.Country = Backbone.Model.extend();
     Meninges.Author = Backbone.MeningesModel.extend({
       associations: {
-        "country" : {class: "Meninges.Country"}
+        "country" : {model: "Meninges.Country"}
       }
     });
     Meninges.Links = Backbone.Collection.extend({
@@ -19,8 +19,8 @@ describe("meninges", function () {
     Meninges.Link = Backbone.Model.extend();
     Meninges.Book = Backbone.MeningesModel.extend({
       associations: {
-        "author": {class: "Meninges.Author"},
-        "links": {class: "Meninges.Links"}
+        "author": {model: "Meninges.Author"},
+        "links": {model: "Meninges.Links"}
       }
     });
 

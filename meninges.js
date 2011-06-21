@@ -27,7 +27,7 @@ Backbone.MeningesModel = Backbone.Model.extend({
     if (this.associations) {
       var self = this;
       _(_(this.associations).keys()).each(function (key) {
-        var obj = self.lookupConstructor(self.associations[key].class);
+        var obj = self.lookupConstructor(self.associations[key].model);
         if (obj !== undefined) {
           var setter = {};
           setter[key] = new obj(self.attributes[key]);
@@ -42,7 +42,7 @@ Backbone.MeningesModel = Backbone.Model.extend({
     var self = this;
     if (this.associations) {
       _(_(this.associations).keys()).each(function (key) {
-        var obj = self.lookupConstructor(self.associations[key].class);
+        var obj = self.lookupConstructor(self.associations[key].model);
         if (obj !== undefined) {
           o[key] = o[key].toJSON();
         }
@@ -56,7 +56,7 @@ Backbone.MeningesModel = Backbone.Model.extend({
     if (this.associations) {
       var self = this;
       _(_(this.associations).keys()).each(function (key) {
-        var obj = self.lookupConstructor(self.associations[key].class);
+        var obj = self.lookupConstructor(self.associations[key].model);
         if (obj !== undefined) {
           var setter = {};
           setter[key] = new obj(attributes[key]);
