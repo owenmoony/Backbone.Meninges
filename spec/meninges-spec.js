@@ -1,4 +1,7 @@
 describe("meninges", function () {
+
+  var data;
+
   beforeEach(function () {
     window.Meninges = {};
     Backbone.MODELS_NS = Meninges;
@@ -10,7 +13,8 @@ describe("meninges", function () {
     });
     Meninges.Links = Backbone.Collection.extend({
       model: Meninges.Link,
-      proveImALinksCollection: function () {} 
+      proveImALinksCollection: function () {
+      }
     });
     Meninges.Link = Backbone.Model.extend();
     Meninges.Book = Backbone.MeningesModel.extend({
@@ -39,7 +43,7 @@ describe("meninges", function () {
       }
     });
 
-    this.data = {
+    data = {
       id: 1,
       title: "Le Menon",
       author: {
@@ -56,22 +60,45 @@ describe("meninges", function () {
       ]
     };
 
-    this.book = new Meninges.Book(this.data);
+    this.book = new Meninges.Book(data);
     this.bookView = new Meninges.BookView({model: this.book});
     this.bookView.render();
   });
 
-  it("should load the author as a nested model", function () {
-    expect(this.book.get("author").get).toBeDefined();
+  describe("constructor", function () {
+    it("should load the author as a nested model", function () {
+      expect(this.book.get("author").get).toBeDefined();
+    });
+
+    it("should load country as a nested model of author", function () {
+      expect(this.book.get("author").get("country").get).toBeDefined();
+    });
+
+    it("should load the links in a Meninges.Links collection", function () {
+      expect(this.book.get("links").proveImALinksCollection).toBeDefined();
+    });
   });
 
-  it("should load country as a nested model of author", function () {
-    expect(this.book.get("author").get("country").get).toBeDefined();
+  describe("parse", function () {
+    beforeEach(function () {
+      this.book = new Meninges.Book();
+      this.book.parse(data);
+    });
+
+    it("should load the author as a nested model", function () {
+
+      expect(this.book.get("author").get).toBeDefined();
+    });
+
+    it("should load country as a nested model of author", function () {
+      expect(this.book.get("author").get("country").get).toBeDefined();
+    });
+
+    it("should load the links in a Meninges.Links collection", function () {
+      expect(this.book.get("links").proveImALinksCollection).toBeDefined();
+    });
   });
 
-  it("should load the links in a Meninges.Links collection", function () {
-    expect(this.book.get("links").proveImALinksCollection).toBeDefined();
-  });
 
   describe("html form/relational model synchronisation", function () {
     it("should update the model when the user is changing the form values", function () {
