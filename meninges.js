@@ -24,13 +24,13 @@ Backbone.FormView = {
 Backbone.MeningesModel = Backbone.Model.extend({
   constructor: function() {
     Backbone.Model.prototype.constructor.apply(this, arguments);
-    if (Backbone.MODELS_NS) {
+    if (this.associations) {
       var self = this;
-      _(_(this.attributes).keys()).each(function (key) {
-        var modelClass = key.charAt(0).toUpperCase() + key.substring(1).toLowerCase();
-        if (Backbone.MODELS_NS[modelClass] !== undefined) {
+      _(_(this.associations).keys()).each(function (key) {
+        var obj = self.lookupConstructor(self.associations[key].class);
+        if (obj !== undefined) {
           var setter = {};
-          setter[key] = new Backbone.MODELS_NS[modelClass](self.attributes[key]);
+          setter[key] = new obj(self.attributes[key]);
           self.set(setter);
         }
       });
@@ -39,14 +39,39 @@ Backbone.MeningesModel = Backbone.Model.extend({
 
   toJSON: function () {
     var o = Backbone.Model.prototype.toJSON.apply(this, arguments);
-    if (Backbone.MODELS_NS) {
-      _(_(o).keys()).each(function (key) {
-        var modelClass = key.charAt(0).toUpperCase() + key.substring(1).toLowerCase();
-        if (Backbone.MODELS_NS[modelClass] !== undefined) {
+    var self = this;
+    if (this.associations) {
+      _(_(this.associations).keys()).each(function (key) {
+        var obj = self.lookupConstructor(self.associations[key].class);
+        if (obj !== undefined) {
           o[key] = o[key].toJSON();
         }
       });
     }
     return o;
+  },
+
+  parse: function(attributes, xhr) {
+    var attrs = Backbone.Model.prototype.parse.apply(this, arguments);
+    if (this.associations) {
+      var self = this;
+      _(_(this.associations).keys()).each(function (key) {
+        var obj = self.lookupConstructor(self.associations[key].class);
+        if (obj !== undefined) {
+          var setter = {};
+          setter[key] = new obj(attributes[key]);
+          self.set(setter);
+        }
+      });
+    }
+    return attrs;
+  },
+
+  lookupConstructor: function (classPath) {
+    var obj = window;
+    _(classPath.split(".")).each(function(pathElement) {
+      obj = obj[pathElement];
+    });
+    return obj;
   }
 });

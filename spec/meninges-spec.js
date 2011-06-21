@@ -2,14 +2,23 @@ describe("meninges", function () {
   beforeEach(function () {
     window.Meninges = {};
     Backbone.MODELS_NS = Meninges;
-    Meninges.Country = Backbone.MeningesModel.extend();
-    Meninges.Author = Backbone.MeningesModel.extend();
+    Meninges.Country = Backbone.Model.extend();
+    Meninges.Author = Backbone.MeningesModel.extend({
+      associations: {
+        "country" : {class: "Meninges.Country"}
+      }
+    });
     Meninges.Links = Backbone.Collection.extend({
       model: Meninges.Link,
       proveImALinksCollection: function () {} 
     });
-    Meninges.Link = Backbone.MeningesModel.extend();
-    Meninges.Book = Backbone.MeningesModel.extend();
+    Meninges.Link = Backbone.Model.extend();
+    Meninges.Book = Backbone.MeningesModel.extend({
+      associations: {
+        "author": {class: "Meninges.Author"},
+        "links": {class: "Meninges.Links"}
+      }
+    });
 
     Meninges.BookView = Backbone.FormView.extend({
 
