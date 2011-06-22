@@ -56,7 +56,7 @@ It also provides a FormView that binds blur events on html form inputs to a func
     var book = new Meninges.Book(data);
 ```
 
-* Nested objects are automatically loaded into MeningesModel (if defined)
+* Nested objects are automatically loaded into MeningesModel (as long as they're defined)
 
 ```javascript
     book.get("author").get("country").get("name") //greece
@@ -82,9 +82,9 @@ It also provides a FormView that binds blur events on html form inputs to a func
     // ... render the view and append to a html node.
 ```
 
-* User input should be synchronised to MeningesModel as the user leaves the input fields (blur).
+* From then on, user input should be synchronised to MeningesModel as the user leaves the input fields (blur).
 
-## Link input fields to model attributes
+* Link input fields to model attributes
 
 ```javascript
     <input name="author.country.name" class="meninges" type="text" />
