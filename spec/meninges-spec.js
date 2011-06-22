@@ -37,7 +37,9 @@ describe("meninges", function () {
       render: function () {
         var html = '<input name="title" class="meninges" type="text" />' +
             '<input name="author.name" class="meninges" type="text" />' +
-            '<input name="author.country.name" class="meninges" type="text">"';
+            '<input name="author.country.name" class="meninges" type="text">"' +
+            '<select name="author.country.continent" class="meninges">' +
+            '<option value="europe">europe</option><option value="afrique">afrique</option></select>';
         $(this.el).html(html);
         $("#book-form-container").html(this.el);
       }
@@ -116,14 +118,17 @@ describe("meninges", function () {
 
     it("should be updated in the json output as well", function () {
 
-      $("input[name='title']").val("new title").trigger("blur");
-      expect(this.book.toJSON().title).toEqual("new title");
+//      $("input[name='title']").val("new title").trigger("blur");
+//      expect(this.book.toJSON().title).toEqual("new title");
+//
+//      $("input[name='author.name']").val("new name").trigger("blur");
+//      expect(this.book.toJSON().author.name).toEqual("new name");
+//
+//      $("input[name='author.country.name']").val("turkey").trigger("blur");
+//      expect(this.book.toJSON().author.country.name).toEqual("turkey");
 
-      $("input[name='author.name']").val("new name").trigger("blur");
-      expect(this.book.toJSON().author.name).toEqual("new name");
-
-      $("input[name='author.country.name']").val("turkey").trigger("blur");
-      expect(this.book.toJSON().author.country.name).toEqual("turkey");
+      $("select[name='author.country.continent']").val("afrique").trigger("blur");
+      expect(this.book.toJSON().author.country.continent).toEqual("afrique");
 
     });
   });
