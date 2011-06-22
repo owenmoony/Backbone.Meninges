@@ -2,10 +2,9 @@ Backbone.FormView = {
   extend: function (o) {
 
     o.events = o.events || {};
-    o.events["blur input"] = 'updateModel';
+    o.events["blur .meninges"] = 'refreshModel';
 
-    o.updateModel = function (event) {
-
+    o.refreshModel = function (event) {
       var pathItems = event.target.name.split(".");
       var currentModel = this.model;
 
@@ -61,6 +60,7 @@ Backbone.MeningesModel = Backbone.Model.extend({
           var setter = {};
           setter[key] = new obj(attributes[key]);
           self.set(setter);
+          delete attrs[key];
         }
       });
     }
