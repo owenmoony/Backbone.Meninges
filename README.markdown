@@ -84,7 +84,7 @@ It also provides a FormView that binds blur events on html form inputs to a func
 
 * From then on, user input should be synchronised to MeningesModel as the user leaves the input fields (blur).
 
-* Link input fields to model attributes
+* Follow this syntax to link input fields to model attributes
 
 ```javascript
     <input name="author.country.name" class="meninges" type="text" />
