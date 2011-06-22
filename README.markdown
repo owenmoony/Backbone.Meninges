@@ -1,7 +1,5 @@
-# Meninges - Deep Models and Smart forms for Backbone js
-
 Meninges models let you load deep domain models into backbone models by declaring associations (rather than coding the relationships manually).
-It also provides a FormView that binds blur events on html form inputs to a function refreshing the backing MeningesModel from the form values.
+Meninges also provides a FormView that binds blur events on html form inputs to a function refreshing the backing MeningesModel from the form values.
 
 # To use it
 
