@@ -31,7 +31,7 @@ describe("meninges", function () {
       },
 
       externalEventHandlerExample: function () {
-        console.log("running the external event handler");
+        //console.log("running the external event handler");
       },
 
       render: function () {
@@ -39,7 +39,9 @@ describe("meninges", function () {
             '<input name="author.name" class="meninges" type="text" />' +
             '<input name="author.country.name" class="meninges" type="text">"' +
             '<select name="author.country.continent" class="meninges">' +
-            '<option value="europe">europe</option><option value="afrique">afrique</option></select>';
+            '<option value="europe">europe</option><option value="afrique">afrique</option></select>' +
+            '<input name="links:0.type" class="meninges" type="text" />' +
+            '<input name="author.is_dead" class="meninges" type="checkbox" />';
         $(this.el).html(html);
         $("#book-form-container").html(this.el);
       }
@@ -49,6 +51,7 @@ describe("meninges", function () {
       id: 1,
       title: "Le Menon",
       author: {
+        is_dead: true,
         name: "Platon",
         gender: "male",
         country: {
@@ -114,6 +117,23 @@ describe("meninges", function () {
       $("input[name='author.country.name']").val("c").trigger("blur");
       expect(this.book.get("author").get("country").get("name")).toEqual("c");
 
+      $("select[name='author.country.continent']").val("afrique").trigger("blur");
+      expect(this.book.get("author").get("country").get("continent")).toEqual("afrique");
+
+    });
+
+    describe("collections (list of text inputs)", function () {
+      it("should synchronise collections as well as models", function () {
+        $("input[name='links:0.type']").val("what?").trigger("blur");
+        expect(this.book.get("links").at(0).get("type")).toEqual("what?");
+      });
+    });
+
+    describe("boolean values (checkboxes)", function () {
+      it("should set true on the model when the checkbox is ticked (and false when un-ticked", function () {
+        $("input[name='author.is_dead']").prop("checked", false).trigger("blur");
+        expect(this.book.get("author").get("is_dead")).toEqual(false);
+      });
     });
 
     it("should be updated in the json output as well", function () {
@@ -129,6 +149,9 @@ describe("meninges", function () {
 
       $("select[name='author.country.continent']").val("afrique").trigger("blur");
       expect(this.book.toJSON().author.country.continent).toEqual("afrique");
+
+      $("input[name='links:0.type']").val("sonic").trigger("blur");
+        expect(this.book.toJSON().links[0].type).toEqual("sonic");
 
     });
   });
