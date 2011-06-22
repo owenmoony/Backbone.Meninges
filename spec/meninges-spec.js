@@ -24,7 +24,7 @@ describe("meninges", function () {
       }
     });
 
-    Meninges.BookView = Backbone.FormView.extend({
+    Meninges.BookView = Backbone.MeningesView.extend({
 
       events: {
         "click input[name='author.name']": "externalEventHandlerExample"
