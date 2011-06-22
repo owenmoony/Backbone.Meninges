@@ -35,9 +35,9 @@ describe("meninges", function () {
       },
 
       render: function () {
-        var html = '<input name="title" type="text" />' +
-            '<input name="author.name" type="text" />' +
-            '<input name="author.country.name" type="text">"';
+        var html = '<input name="title" class="meninges" type="text" />' +
+            '<input name="author.name" class="meninges" type="text" />' +
+            '<input name="author.country.name" class="meninges" type="text">"';
         $(this.el).html(html);
         $("#book-form-container").html(this.el);
       }
