@@ -37,7 +37,9 @@ describe("meninges", function () {
       render: function () {
         var html = '<input name="title" class="meninges" type="text" />' +
             '<input name="author.name" class="meninges" type="text" />' +
-            '<input name="author.country.name" class="meninges" type="text">"';
+            '<input name="author.country.name" class="meninges" type="text">"' +
+            '<select name="author.country.continent" class="meninges">' +
+            '<option value="europe">europe</option><option value="afrique">afrique</option></select>';
         $(this.el).html(html);
         $("#book-form-container").html(this.el);
       }
@@ -124,6 +126,9 @@ describe("meninges", function () {
 
       $("input[name='author.country.name']").val("turkey").trigger("blur");
       expect(this.book.toJSON().author.country.name).toEqual("turkey");
+
+      $("select[name='author.country.continent']").val("afrique").trigger("blur");
+      expect(this.book.toJSON().author.country.continent).toEqual("afrique");
 
     });
   });
