@@ -6,7 +6,8 @@ Meninges also provides a FormView that binds blur events on html form inputs to 
 * Include meninges.js in your page:
 
 ```javascript
-    <script type="text/javascript" src="js/meninges.js"></script>
+    <script type="text/javascript" src="js/meninges-model.js"></script>
+    <script type="text/javascript" src="js/meninges-view.js"></script>
 ```
 
 * Define your Models
@@ -64,7 +65,7 @@ Meninges also provides a FormView that binds blur events on html form inputs to 
 * Extend Backbone.FormView
 
 ```javascript
-    Meninges.BookView = Backbone.FormView.extend({
+    Meninges.BookView = Backbone.MeningesView.extend({
       render: function () {
         var html = '<select name="author.country.continent" class="meninges">';
         $(this.el).html(html);
