@@ -130,10 +130,13 @@ describe("meninges", function () {
     });
 
     describe("boolean values (checkboxes)", function () {
-      it("should set true on the model when the checkbox is ticked (and false when un-ticked", function () {
-        $("input[name='author.is_dead']").prop("checked", false).trigger("blur");
-        expect(this.book.get("author").get("is_dead")).toEqual(false);
+      _(["blur", "change"]).each(function (eventName) {  
+        it("should set true on the model when the checkbox is ticked (and false when un-ticked) for a '" + eventName + "' event", function () {
+          $("input[name='author.is_dead']").prop("checked", false).trigger(eventName);
+          expect(this.book.get("author").get("is_dead")).toEqual(false);
+        });
       });
+
     });
 
     it("should be updated in the json output as well", function () {
@@ -147,7 +150,7 @@ describe("meninges", function () {
       $("input[name='author.country.name']").val("turkey").trigger("blur");
       expect(this.book.toJSON().author.country.name).toEqual("turkey");
 
-      $("select[name='author.country.continent']").val("afrique").trigger("blur");
+      $("select[name='author.country.continent']").val("afrique").trigger("change");
       expect(this.book.toJSON().author.country.continent).toEqual("afrique");
 
       $("input[name='links:0.type']").val("sonic").trigger("blur");

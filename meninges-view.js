@@ -20,6 +20,8 @@ Backbone.MeningesView = {
 
     o.events = o.events || {};
     o.events["blur .meninges"] = 'refreshModel';
+    o.events["change input.meninges[type='checkbox']"] = 'refreshModel';
+    o.events["change select.meninges"] = 'refreshModel';
 
     o.refreshModel = function (event) {
       var pathItems = event.target.name.split(".");
