@@ -89,8 +89,8 @@ Meninges also provides a FormView that binds blur events on html form inputs to 
 
 ```javascript
     <input name="author.country.name" class="meninges" type="text" />
-    // links to this.model.get("author").get("country").get("name")
+    // binds the input to this.model.get("author").get("country").get("name")
 
     <input name="links:0.url" class="meninges" type="text" />
-    // links to this.model.get("links").at(0).get("url")
+    // binds the input to this.model.get("links").at(0).get("url")
 ```
