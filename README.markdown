@@ -61,8 +61,10 @@ Meninges also provides a FormView that binds blur events on html form inputs to 
     book.get("author").get("country").get("name") //greece
 ```
 
+* toJSON will include the json of the nested meninges models
+
 # Put a form in front of your model
-* Extend Backbone.FormView
+* Extend Backbone.MeningesView
 
 ```javascript
     Meninges.BookView = Backbone.MeningesView.extend({
