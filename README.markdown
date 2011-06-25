@@ -13,20 +13,20 @@ Meninges also provides a FormView that binds blur events on html form inputs to 
 * Define your Models
 
 ```javascript
-    Meninges.Country = Backbone.Model.extend();
-    Meninges.Author = Backbone.MeningesModel.extend({
+    MyApp.Country = Backbone.Model.extend();
+    MyApp.Author = Backbone.MeningesModel.extend({
       associations: {
-        "country" : {model: "Meninges.Country"}
+        "country" : {model: "MyApp.Country"}
       }
     });
-    Meninges.Links = Backbone.Collection.extend({
-      model: Meninges.Link
+    MyApp.Links = Backbone.Collection.extend({
+      model: MyApp.Link
     });
-    Meninges.Link = Backbone.Model.extend();
-    Meninges.Book = Backbone.MeningesModel.extend({
+    MyApp.Link = Backbone.Model.extend();
+    MyApp.Book = Backbone.MeningesModel.extend({
       associations: {
-        "author": {model: "Meninges.Author"},
-        "links": {model: "Meninges.Links"}
+        "author": {model: "MyApp.Author"},
+        "links": {model: "MyApp.Links"}
       }
     });
 ```
@@ -52,7 +52,7 @@ Meninges also provides a FormView that binds blur events on html form inputs to 
       ]
     };
 
-    var book = new Meninges.Book(data);
+    var book = new MyApp.Book(data);
 ```
 
 * Nested objects are automatically loaded into MeningesModel (as long as they're defined)
@@ -67,7 +67,7 @@ Meninges also provides a FormView that binds blur events on html form inputs to 
 * Extend Backbone.MeningesView
 
 ```javascript
-    Meninges.BookView = Backbone.MeningesView.extend({
+    MyApp.BookView = Backbone.MeningesView.extend({
       render: function () {
         var html = '<select name="author.country.continent" class="meninges">';
         $(this.el).html(html);
@@ -79,18 +79,18 @@ Meninges also provides a FormView that binds blur events on html form inputs to 
 * Instantiate it
 
 ```javascript
-    bookView = new Meninges.BookView({model: this.book});
+    bookView = new MyApp.BookView({model: this.book});
     // ... render the view and append to a html node.
 ```
 
 * From then on, user input should be synchronised to MeningesModel as the user leaves the input fields (blur).
 
-* Follow this syntax to link input fields to model attributes
+* Follow this syntax to bind input fields to model attributes
 
 ```javascript
     <input name="author.country.name" class="meninges" type="text" />
-    // links to this.model.get("author").get("country").get("name")
+    // binds the input to this.model.get("author").get("country").get("name")
 
     <input name="links:0.url" class="meninges" type="text" />
-    // links to this.model.get("links").at(0).get("url")
+    // binds the input to this.model.get("links").at(0).get("url")
 ```
