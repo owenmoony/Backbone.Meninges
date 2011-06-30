@@ -15,7 +15,7 @@ Backbone.MeningesView = {
       if(event.target.type === "checkbox") {
         return event.target.checked;
       }
-      return event.target.value;
+      return event.target.value || '';
     };
 
     o.events = o.events || {};

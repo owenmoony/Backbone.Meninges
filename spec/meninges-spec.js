@@ -104,6 +104,28 @@ describe("meninges", function () {
     });
   });
 
+  describe("events", function () {
+    
+    xit("should not prevent the events from bound on parsing", function () {
+      //TODO: implement this test. it's not easy... parse blows away the
+      //backbone model version of the nested attribute before meninges
+      //gets a chance to save the bindings.
+      obj = {}
+      obj.eventCount = 0;
+      obj.eventHandler = function (model) {
+       var that = this;
+       model.bind("change", function () {
+         console.log("event raised" + that.eventCount++);
+       });
+      }
+      obj.eventHandler(this.book.get("author").get("country"))
+      this.book.get("author").get("country").set({foo: 'bar1'});
+      this.book.parse(data);
+      this.book.get("author").get("country").set({foo: 'bar2'});
+      expect(obj.eventCount).toEqual(2);
+    });
+  });
+
 
   describe("html form/relational model synchronisation", function () {
     it("should update the model when the user is changing the form values", function () {
@@ -158,5 +180,8 @@ describe("meninges", function () {
 
     });
   });
+
+
+
 
 });
