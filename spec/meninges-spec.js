@@ -105,8 +105,8 @@ describe("meninges", function () {
   });
 
   describe("events", function () {
-    
-    xit("should not prevent the events from bound on parsing", function () {
+
+    xit("should not prevent the bound view/model events from being removed during Model#parse", function () {
       //TODO: implement this test. it's not easy... parse blows away the
       //backbone model version of the nested attribute before meninges
       //gets a chance to save the bindings.
@@ -115,7 +115,7 @@ describe("meninges", function () {
       obj.eventHandler = function (model) {
        var that = this;
        model.bind("change", function () {
-         console.log("event raised" + that.eventCount++);
+//         console.log("event raised" + that.eventCount++);
        });
       }
       obj.eventHandler(this.book.get("author").get("country"))
@@ -152,7 +152,7 @@ describe("meninges", function () {
     });
 
     describe("boolean values (checkboxes)", function () {
-      _(["blur", "change"]).each(function (eventName) {  
+      _(["blur", "change"]).each(function (eventName) {
         it("should set true on the model when the checkbox is ticked (and false when un-ticked) for a '" + eventName + "' event", function () {
           $("input[name='author.is_dead']").prop("checked", false).trigger(eventName);
           expect(this.book.get("author").get("is_dead")).toEqual(false);
@@ -181,7 +181,14 @@ describe("meninges", function () {
     });
   });
 
+  describe("#updateModelFromForm", function () {
 
+    it("should update the un-blurred fields when refreshModel is explicity called", function () {
+      $("input[name='title']").val("a");
+      this.bookView.updateModelFromForm();
+      expect(this.book.get("title")).toEqual("a");
+    });
 
+  });
 
 });
