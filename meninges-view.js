@@ -38,7 +38,7 @@ Backbone.MeningesView = {
       o.updateAttribute(pathItems, value, this.model)
     };
 
-    o.updateModelFromForm = function (){
+    o.forceMeningesAttributesUpdate = function (){
       var that = this;
       _.each($('.meninges'), function (control) {
         var pathItems = control.name.split(".");

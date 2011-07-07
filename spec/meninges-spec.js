@@ -181,11 +181,11 @@ describe("meninges", function () {
     });
   });
 
-  describe("#updateModelFromForm", function () {
+  describe("#forceMeningesAttributesUpdate", function () {
 
     it("should update the un-blurred fields when refreshModel is explicity called", function () {
       $("input[name='title']").val("a");
-      this.bookView.updateModelFromForm();
+      this.bookView.forceMeningesAttributesUpdate();
       expect(this.book.get("title")).toEqual("a");
     });
 
