@@ -189,6 +189,13 @@ describe("meninges", function () {
       expect(this.book.get("title")).toEqual("a");
     });
 
+    it('should only update fields that belong to the view', function () {
+      $("#book-form-container").parent().append(
+        '<input type="text" id="other" name="other" value="other" class="meninges">');
+      this.bookView.forceMeningesAttributesUpdate();
+      expect(this.book.get("other")).toBeUndefined();
+    });
+
   });
 
 });
