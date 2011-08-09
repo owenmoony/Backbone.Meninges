@@ -40,7 +40,8 @@ describe("meninges", function () {
             '<input name="author.country.name" class="meninges" type="text">"' +
             '<select name="author.country.continent" class="meninges">' +
             '<option value="europe">europe</option><option value="afrique">afrique</option></select>' +
-            '<input name="links:0.type" class="meninges" type="text" />' +
+            '<input name="links:0.type" class="meninges" type="radio" value="buy" checked="checked" /> Buy' +
+            '<input name="links:0.type" class="meninges" type="radio" value="read" /> Read' +
             '<input name="author.is_dead" class="meninges" type="checkbox" />';
         $(this.el).html(html);
         $("#book-form-container").html(this.el);
@@ -146,12 +147,22 @@ describe("meninges", function () {
 
     describe("collections (list of text inputs)", function () {
       it("should synchronise collections as well as models", function () {
-        $("input[name='links:0.type']").val("what?").trigger("blur");
-        expect(this.book.get("links").at(0).get("type")).toEqual("what?");
+        $($("input[name='links:0.type']")[1]).click();
+        expect(this.book.get("links").at(0).get("type")).toEqual("read");
       });
     });
 
     describe("boolean values (checkboxes)", function () {
+      _(["blur", "change"]).each(function (eventName) {
+        it("should set true on the model when the checkbox is ticked (and false when un-ticked) for a '" + eventName + "' event", function () {
+          $("input[name='author.is_dead']").prop("checked", false).trigger(eventName);
+          expect(this.book.get("author").get("is_dead")).toEqual(false);
+        });
+      });
+
+    });
+
+    describe("radiobutton input", function () {
       _(["blur", "change"]).each(function (eventName) {
         it("should set true on the model when the checkbox is ticked (and false when un-ticked) for a '" + eventName + "' event", function () {
           $("input[name='author.is_dead']").prop("checked", false).trigger(eventName);

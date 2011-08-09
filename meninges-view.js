@@ -21,6 +21,7 @@ Backbone.MeningesView = {
     o.events = o.events || {};
     o.events["blur .meninges"] = 'updateAttributeForEvent';
     o.events["change input.meninges[type='checkbox']"] = 'updateAttributeForEvent';
+    o.events["change input.meninges[type='radio']"] = 'updateAttributeForEvent';
     o.events["change select.meninges"] = 'updateAttributeForEvent';
 
     o.updateAttribute = function(pathItems, value, currentModel){
