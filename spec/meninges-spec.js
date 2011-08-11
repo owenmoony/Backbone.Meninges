@@ -191,22 +191,4 @@ describe("meninges", function () {
 
     });
   });
-
-  describe("#forceMeningesAttributesUpdate", function () {
-
-    it("should update the un-blurred fields when refreshModel is explicity called", function () {
-      $("input[name='title']").val("a");
-      this.bookView.forceMeningesAttributesUpdate();
-      expect(this.book.get("title")).toEqual("a");
-    });
-
-    it('should only update fields that belong to the view', function () {
-      $("#book-form-container").parent().append(
-        '<input type="text" id="other" name="other" value="other" class="meninges">');
-      this.bookView.forceMeningesAttributesUpdate();
-      expect(this.book.get("other")).toBeUndefined();
-    });
-
-  });
-
 });

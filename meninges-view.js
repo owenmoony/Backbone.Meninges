@@ -39,15 +39,6 @@ Backbone.MeningesView = {
       o.updateAttribute(pathItems, value, this.model)
     };
 
-    o.forceMeningesAttributesUpdate = function (){
-      var that = this;
-      _.each(this.$('.meninges'), function (control) {
-        var pathItems = control.name.split(".");
-        var value = extractValue(control);
-        o.updateAttribute(pathItems, value, that.model)
-      });
-    };
-
     return Backbone.View.extend(o);
 
   }
