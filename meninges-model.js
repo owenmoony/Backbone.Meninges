@@ -1,17 +1,7 @@
 Backbone.MeningesModel = Backbone.Model.extend({
   constructor: function() {
     Backbone.Model.prototype.constructor.apply(this, arguments);
-    if (this.associations) {
-      var self = this;
-      _(_(this.associations).keys()).each(function (key) {
-        var obj = self.lookupConstructor(self.associations[key].model);
-        if (obj !== undefined) {
-          var setter = {};
-          setter[key] = new obj(self.attributes[key]);
-          self.set(setter);
-        }
-      });
-    }
+    this.replaceWithMeningesAttributes(this.attributes);
   },
 
   toJSON: function () {
@@ -28,21 +18,21 @@ Backbone.MeningesModel = Backbone.Model.extend({
     return o;
   },
 
-  parse: function(attributes, xhr) {
-    var attrs = Backbone.Model.prototype.parse.apply(this, arguments);
+  parse: function(attrs, xhr) {
+    this.replaceWithMeningesAttributes(attrs);
+    return attrs;
+  },
+
+  replaceWithMeningesAttributes: function(attrs) {
     if (this.associations) {
       var self = this;
       _(_(this.associations).keys()).each(function (key) {
         var obj = self.lookupConstructor(self.associations[key].model);
         if (obj !== undefined) {
-          var setter = {};
-          setter[key] = new obj(attributes[key]);
-          self.set(setter);
-          delete attrs[key];
+          attrs[key] = new obj(attrs[key]);
         }
       });
     }
-    return attrs;
   },
 
   lookupConstructor: function (classPath) {
