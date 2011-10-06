@@ -29,7 +29,17 @@ Backbone.MeningesModel = Backbone.Model.extend({
       _(_(this.associations).keys()).each(function (key) {
         var obj = self.lookupConstructor(self.associations[key].model);
         if (obj !== undefined) {
-          attrs[key] = new obj(attrs[key]);
+          if(self.get(key) && self.get(key).set) {
+            self.get(key).set(self.get(key).parse(attrs[key]));
+            delete attrs[key]
+          }
+          else if(self.get(key) && self.get(key).reset) {
+            self.get(key).reset(attrs[key]);
+            delete attrs[key]
+          }
+          else {
+            attrs[key] = new obj(attrs[key]);
+          }
         }
       });
     }
