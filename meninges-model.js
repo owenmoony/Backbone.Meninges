@@ -34,7 +34,7 @@ Backbone.MeningesModel = Backbone.Model.extend({
             delete attrs[key]
           }
           else if(self.get(key) && self.get(key).reset) {
-            self.get(key).reset(attrs[key]);
+            self.get(key).reset(self.get(key).parse(attrs[key]));
             delete attrs[key]
           }
           else {

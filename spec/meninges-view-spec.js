@@ -11,7 +11,10 @@ describe("meninges", function () {
         country: {
           name: "greece",
           continent: "europe"
-        }
+        },
+        links: [
+          {type: "biographie", uri: "http://laviedeplaton.fr"}
+        ]
       },
       links: [
         {type: "buy", uri: "http://amazon.fr/123"},
@@ -25,7 +28,8 @@ describe("meninges", function () {
   Meninges.Country = Backbone.Model.extend();
   Meninges.Author = Backbone.MeningesModel.extend({
     associations: {
-      "country" : {model: "Meninges.Country"}
+      "country" : {model: "Meninges.Country"}, 
+      "links" : {model: "Meninges.Links"}
     }
   });
   
@@ -66,56 +70,6 @@ describe("meninges", function () {
       $(this.el).html(html);
       $("#book-form-container").html(this.el);
     }
-  });
-
-  describe("constructor", function () {
-    
-    var book;
-    
-    beforeEach(function () {
-      book = new Meninges.Book(data());
-    });
-    
-    it("should load the author as a nested model", function () {
-      expect(book.get("author").get).toBeDefined();
-    });
-    
-    it("should load country as a nested model of author", function () {
-      expect(book.get("author").get("country").get).toBeDefined();
-    });
-
-    it("should load the links in a Meninges.Links collection", function () {
-      expect(book.get("links").proveImALinksCollection).toBeDefined();
-    });
-  });
-
-  describe("parse", function () {
-    
-    var book;
-    
-    beforeEach(function () {
-      book = new Meninges.Book();
-      book.parse(data());
-    });
-
-    it("should load the author as a nested model", function () {
-      expect(book.get("author").get).toBeDefined();
-    });
-
-    it("should load country as a nested model of author", function () {
-      expect(book.get("author").get("country").get).toBeDefined();
-    });
-
-    it("should load the links in a Meninges.Links collection", function () {
-      expect(book.get("links").proveImALinksCollection).toBeDefined();
-    });
-    
-    it("should re-use the existing nested models when set is called", function () {
-      book = new Meninges.Book(data());
-      var links = book.get("links");
-      book.set(book.parse(data()));
-      expect(links).toEqual(book.get("links"));
-    });
   });
 
   xdescribe("events", function () {
