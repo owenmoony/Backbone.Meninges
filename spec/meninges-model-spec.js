@@ -40,7 +40,15 @@ describe("meninges", function () {
   
   window.SomeApp = {};
 
-  SomeApp.Authorization = Backbone.Model.extend();
+  SomeApp.Authorization = Backbone.Model.extend({
+    equals: function (json) {
+      try {
+        return this.get("name") == json.name;
+      } catch (e) {
+        return false;
+      }
+    }
+  });
   
   SomeApp.Authorizations = Backbone.Collection.extend({
     model: SomeApp.Authorization
@@ -49,6 +57,14 @@ describe("meninges", function () {
   SomeApp.Role = Backbone.MeningesModel.extend({
     associations: {
       "authorizations": {model: "SomeApp.Authorizations"} 
+    },
+
+    equals: function (json) {
+      try { 
+        return this.get("name") == json.name;
+      } catch(e) {
+        return false;
+      }
     }
   });
 
@@ -125,8 +141,24 @@ describe("meninges", function () {
       topLevel.set(topLevel.parse(data()));
       expect(configuration).toEqual(topLevel.get("configuration"));
       expect(roles).toEqual(topLevel.get("configuration").get("roles"));
-      //expect(firstRole).toEqual(topLevel.get("configuration").get("roles").at(0));
+      expect(firstRole).toEqual(topLevel.get("configuration").get("roles").at(0));
+      expect(firstAuthorization).toEqual(topLevel.get("configuration").get("roles").at(0).get("authorizations").at(0));
+    });
 
+    it("should re-use the same objects but update their attributes", function () {
+      var newData = data();
+      newData.configuration.roles[0].authorizations[0].value = "no";
+
+      topLevel.set(topLevel.parse(newData));
+      expect(firstAuthorization).toEqual(topLevel.get("configuration").get("roles").at(0).get("authorizations").at(0));
+      expect(topLevel.get("configuration").get("roles").at(0).get("authorizations").at(0).get("value")).toEqual("no");
+    });
+
+    xit("should remove the nested models that match no incoming attribute", function () {
+      var newData = data();
+      delete newData.configuration.roles[0].authorizations[0];
+      topLevel.set(topLevel.parse(newData));
+      expect(topLevel.get("configuration").get("roles").at(0).get("authorizations").length).toEqual(1);
     });
   });
 });

@@ -31,11 +31,11 @@ Backbone.MeningesModel = Backbone.Model.extend({
         if (obj !== undefined) {
           if(self.get(key) && self.get(key).set) {
             self.get(key).set(self.get(key).parse(attrs[key]));
-            delete attrs[key]
+            delete attrs[key];
           }
           else if(self.get(key) && self.get(key).reset) {
-            self.get(key).reset(self.get(key).parse(attrs[key]));
-            delete attrs[key]
+            self.populateCollectionFromArray(attrs[key], self.get(key));
+            delete attrs[key];
           }
           else {
             attrs[key] = new obj(attrs[key]);
@@ -43,6 +43,20 @@ Backbone.MeningesModel = Backbone.Model.extend({
         }
       });
     }
+  },
+
+  populateCollectionFromArray: function (els, collection) {
+    collection.each(function (model) {
+      _(els).each(function (el, index) {
+        if(model.equals && model.equals(el)) {
+          model.set(model.parse(el));
+          delete els[index];
+        }
+      });
+    });
+    _(els).each(function (el) {
+      collection.add(new collection.model(el));
+    });
   },
 
   lookupConstructor: function (classPath) {
