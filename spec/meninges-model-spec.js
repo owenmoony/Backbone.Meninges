@@ -1,109 +1,132 @@
 describe("meninges", function () {
 
   var data = function () {
+    // nested model (configuration) with collection (roles) 
+    // of models with collections (authorizations) of models
     return {
       id: 1,
-      title: "Le Menon",
-      author: {
-        is_dead: true,
-        name: "Platon",
-        gender: "male",
-        country: {
-          name: "greece",
-          continent: "europe"
-        },
-        links: [
-          {type: "biographie", uri: "http://laviedeplaton.fr"}
+      configuration: {
+        roles: [
+          {
+            name: "this and that",
+            authorizations: [
+              {
+                name: "do this",
+                value: "yes"
+              },
+              {
+                name: "do that", 
+                value: "no"
+              }
+            ]
+          }, 
+          {
+            name: "here and there", 
+            authorizations: [
+              {
+                name: "come here", 
+                value: "yes"
+              }, 
+              {
+                name: "go there", 
+                value: "no"
+              }
+            ]
+          }
         ]
-      },
-      links: [
-        {type: "buy", uri: "http://amazon.fr/123"},
-        {type: "read", uri: "http://livresenligne.fr/lemenon"}
-      ]
+      } 
     };
   };
   
-  window.Meninges = {};
-  Backbone.MODELS_NS = Meninges;
-  Meninges.Country = Backbone.Model.extend();
-  Meninges.Author = Backbone.MeningesModel.extend({
-    associations: {
-      "country" : {model: "Meninges.Country"}, 
-      "links" : {model: "Meninges.Links"}
-    }
+  window.SomeApp = {};
+
+  SomeApp.Authorization = Backbone.Model.extend();
+  
+  SomeApp.Authorizations = Backbone.Collection.extend({
+    model: SomeApp.Authorization
   });
   
-  Meninges.Links = Backbone.Collection.extend({
-    model: Meninges.Link,
-    proveImALinksCollection: function () {
-    }
-  });
-  
-  Meninges.Link = Backbone.Model.extend();
-  
-  Meninges.Book = Backbone.MeningesModel.extend({
+  SomeApp.Role = Backbone.MeningesModel.extend({
     associations: {
-      "author": {model: "Meninges.Author"},
-      "links": {model: "Meninges.Links"}
+      "authorizations": {model: "SomeApp.Authorizations"} 
     }
   });
 
+  SomeApp.Roles = Backbone.Collection.extend({
+    model: SomeApp.Role
+  });
+
+  SomeApp.Configuration = Backbone.MeningesModel.extend({
+    associations: {
+      "roles": {model: "SomeApp.Roles"}
+    }
+  });
+
+  SomeApp.TopLevel = Backbone.MeningesModel.extend({
+    associations: {
+      "configuration": {model: "SomeApp.Configuration"},
+    }
+  });
+
+
+  var testDeepNesting = function (topLevel) {
+    it("should load nested models", function () {
+      expect(topLevel.get("configuration").get).toBeDefined();
+    });
+    
+    it("should load nested collections", function () {
+      expect(topLevel.get("configuration").get("roles").at).toBeDefined();
+      console.log(topLevel.get("configuration"));
+    });
+    
+    it("should load model in the nested collections", function () {
+      expect(topLevel.get("configuration").get("roles").at(0).get).toBeDefined();
+    });
+
+    it("should load collections under models in nested collections", function () {
+      expect(topLevel.get("configuration").get("roles").at(0).get("authorizations").at).toBeDefined();
+    });
+
+    it("should load models in collections under models in nested collections", function () {
+      expect(topLevel.get("configuration").get("roles").at(0).get("authorizations").at(0).get).toBeDefined();
+    });
+  };
+  
   describe("constructor", function () {
-    
-    var book;
-    
-    beforeEach(function () {
-      book = new Meninges.Book(data());
-    });
-    
-    it("should load the author as a nested model", function () {
-      expect(book.get("author").get).toBeDefined();
-    });
-    
-    it("should load country as a nested model of author", function () {
-      expect(book.get("author").get("country").get).toBeDefined();
-    });
-    
-    it("should load links as a nested collection of author", function () {
-      expect(book.get("author").get("links").reset).toBeDefined();
-    });
-
-    it("should load the links in a Meninges.Links collection", function () {
-      expect(book.get("links").reset).toBeDefined();
-    });
+    testDeepNesting(new SomeApp.TopLevel(data()));
   });
 
-  describe("parse", function () {
+  describe("fetch and save, via set and parse", function () {
     
-    var book;
-    
+    var topLevel = new SomeApp.TopLevel();
+    topLevel.set(topLevel.parse(data()));
+    testDeepNesting(topLevel);
+  });
+
+  describe("re-using existing nested objects when parsing is called", function () {
+
+    var topLevel;
+    var configuration;
+    var roles;
+    var firstRole;
+    var authorizations;
+    var firstAuthorization;
+
     beforeEach(function () {
-      book = new Meninges.Book();
-      book.parse(data());
+      topLevel = new SomeApp.TopLevel(data());
+      configuration = topLevel.get("configuration");
+      roles = configuration.get("roles");
+      firstRole = roles.at(0);
+      authorizations = firstRole.get("authorizations");
+      firstAuthorization = authorizations.at(0);
     });
+      
+    it("should re-use the existing nested models when set is called", function () {
+      topLevel.set(topLevel.parse(data()));
+      expect(configuration).toEqual(topLevel.get("configuration"));
+      expect(roles).toEqual(topLevel.get("configuration").get("roles"));
+      //expect(firstRole).toEqual(topLevel.get("configuration").get("roles").at(0));
 
-    it("should load the author as a nested model", function () {
-      expect(book.get("author").get).toBeDefined();
-    });
-
-    it("should load country as a nested model of author", function () {
-      expect(book.get("author").get("country").get).toBeDefined();
-    });
-
-    it("should load the links in a Meninges.Links collection", function () {
-      expect(book.get("links").proveImALinksCollection).toBeDefined();
-    });
-    
-    xit("should re-use the existing nested models when set is called", function () {
-      book = new Meninges.Book(data());
-      var bookLinks = book.get("links");
-      var authorLinks = book.get("author").get("links");
-      var newData = data();
-      newData.author.links[0].uri = "http://what?"
-      book.set(book.parse());
-      expect(bookLinks).toEqual(book.get("links"));
-      expect(authorLinks).toEqual(book.get("author").get("links"));
-      expect(book.get("author").get("links").at(0).get("uri")).toEqual("http://what?");
     });
   });
 });
