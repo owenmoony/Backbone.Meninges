@@ -92,7 +92,6 @@ describe("meninges", function () {
     
     it("should load nested collections", function () {
       expect(topLevel.get("configuration").get("roles").at).toBeDefined();
-      console.log(topLevel.get("configuration"));
     });
     
     it("should load model in the nested collections", function () {
@@ -148,17 +147,33 @@ describe("meninges", function () {
     it("should re-use the same objects but update their attributes", function () {
       var newData = data();
       newData.configuration.roles[0].authorizations[0].value = "no";
-
       topLevel.set(topLevel.parse(newData));
       expect(firstAuthorization).toEqual(topLevel.get("configuration").get("roles").at(0).get("authorizations").at(0));
       expect(topLevel.get("configuration").get("roles").at(0).get("authorizations").at(0).get("value")).toEqual("no");
     });
 
-    xit("should remove the nested models that match no incoming attribute", function () {
-      var newData = data();
-      delete newData.configuration.roles[0].authorizations[0];
-      topLevel.set(topLevel.parse(newData));
+    it("should remove the nested collection elements that match no incoming data", function () {
+      var d = data();
+      var authorizations = d.configuration.roles[0].authorizations;
+      authorizations.splice(0, 1);
+      topLevel.set(topLevel.parse(d));
       expect(topLevel.get("configuration").get("roles").at(0).get("authorizations").length).toEqual(1);
+    });
+
+    xit("should remove the nested models that match no incoming data", function () {
+      var empty = {};
+      topLevel.set(topLevel.parse(empty));
+      expect(topLevel.get("configuration")).not.toBeDefined();
+    });
+
+    it("should add new nested models as they come through", function () {
+      var da = data();
+      var auths = da.configuration.roles[0].authorizations;
+      auths.push({name: "something new", value: "peut etre"});
+      topLevel.set(topLevel.parse(da));
+      expect(topLevel.get("configuration").get("roles").at(0).get("authorizations").length).toEqual(3);
+      expect(topLevel.get("configuration").get("roles").at(0).get("authorizations").at(2).get("value")).toEqual("peut etre");
+
     });
   });
 });
