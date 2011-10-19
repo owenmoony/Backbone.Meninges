@@ -22,25 +22,25 @@ describe("meninges", function () {
       ]
     };
   };
-  
+
   window.Meninges = {};
   Backbone.MODELS_NS = Meninges;
   Meninges.Country = Backbone.Model.extend();
   Meninges.Author = Backbone.MeningesModel.extend({
     associations: {
-      "country" : {model: "Meninges.Country"}, 
+      "country" : {model: "Meninges.Country"},
       "links" : {model: "Meninges.Links"}
     }
   });
-  
+
   Meninges.Links = Backbone.Collection.extend({
     model: Meninges.Link,
     proveImALinksCollection: function () {
     }
   });
-  
+
   Meninges.Link = Backbone.Model.extend();
-  
+
   Meninges.Book = Backbone.MeningesModel.extend({
     associations: {
       "author": {model: "Meninges.Author"},
@@ -74,7 +74,7 @@ describe("meninges", function () {
 
   xdescribe("events", function () {
 
-    beforeEach(function () {  
+    beforeEach(function () {
       book = new Meninges.Book(data());
       bookView = new Meninges.BookView({model: book});
       bookView.render();
@@ -87,10 +87,10 @@ describe("meninges", function () {
       obj = {}
       obj.eventCount = 0;
       obj.eventHandler = function (model) {
-       var that = this;
-       model.bind("change", function () {
+        var that = this;
+        model.bind("change", function () {
 //         console.log("event raised" + that.eventCount++);
-       });
+        });
       }
       obj.eventHandler(book.get("author").get("country"))
       book.get("author").get("country").set({foo: 'bar1'});
@@ -105,7 +105,7 @@ describe("meninges", function () {
 
     var book;
 
-    beforeEach(function () {  
+    beforeEach(function () {
       book = new Meninges.Book(data());
       bookView = new Meninges.BookView({model: book});
       bookView.render();
@@ -125,6 +125,32 @@ describe("meninges", function () {
       $("select[name='author.country.continent']").val("afrique").trigger("blur");
       expect(book.get("author").get("country").get("continent")).toEqual("afrique");
 
+    });
+
+    describe("when the value changes from null to empty string", function () {
+
+      beforeEach(function () {
+        var dataWithNullTitle = data();
+        dataWithNullTitle.title = null;
+        book = new Meninges.Book(dataWithNullTitle);
+        bookView = new Meninges.BookView({model: book});
+        bookView.render();
+      });
+
+      it("should not update the model", function () {
+        spyOn(book, 'set');
+        $("input[name='title']").val("").trigger("blur");
+        expect(book.set).not.toHaveBeenCalled();
+      });
+
+    });
+
+    describe("when the value hasn't changed", function () {
+      it("should not update the model", function () {
+        spyOn(book, 'set');
+        $("input[name='title']").val("Le Menon").trigger("blur");
+        expect(book.set).not.toHaveBeenCalled();
+      });
     });
 
     describe("collections (list of text inputs)", function () {
@@ -169,7 +195,7 @@ describe("meninges", function () {
       expect(book.toJSON().author.country.continent).toEqual("afrique");
 
       $("input[name='links:0.type']").val("sonic").trigger("blur");
-        expect(book.toJSON().links[0].type).toEqual("sonic");
+      expect(book.toJSON().links[0].type).toEqual("sonic");
 
     });
   });
