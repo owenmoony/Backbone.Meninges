@@ -1,4 +1,5 @@
 Backbone.MeningesModel = Backbone.Model.extend({
+
   constructor: function() {
     Backbone.Model.prototype.constructor.apply(this, arguments);
     this.replaceWithMeningesAttributes(this.attributes);
@@ -10,7 +11,7 @@ Backbone.MeningesModel = Backbone.Model.extend({
     if (this.associations) {
       _(_(this.associations).keys()).each(function (key) {
         var obj = self.lookupConstructor(self.associations[key].model);
-        if (obj !== undefined) {
+        if (obj !== undefined && o[key]) {
           o[key] = o[key].toJSON();
         }
       });
@@ -18,22 +19,37 @@ Backbone.MeningesModel = Backbone.Model.extend({
     return o;
   },
 
-  parse: function(attrs, xhr) {
+  parse: function (attrs, xhr, isNested) {
+    var attrsClone = _(attrs).clone();
     this.replaceWithMeningesAttributes(attrs);
+    if(isNested) {
+      this.removeAttributesNotProvided(attrsClone);
+    }
     return attrs;
   },
 
-  replaceWithMeningesAttributes: function(attrs) {
+  removeAttributesNotProvided: function (attrs) {
+    var keys = _(this.attributes).keys();
+    var self = this;
+    _(keys).each(function (key) {
+      if(!attrs[key]) {
+        console.log("unsetting " + key);
+        self.unset(key);
+      }
+    });
+  },
+
+  replaceWithMeningesAttributes: function (attrs) {
     if (this.associations) {
       var self = this;
       _(_(this.associations).keys()).each(function (key) {
         var obj = self.lookupConstructor(self.associations[key].model);
         if (obj !== undefined) {
           if(self.get(key) && self.get(key).set) {
-            self.get(key).set(self.get(key).parse(attrs[key]));
+            self.get(key).set(self.get(key).parse(attrs[key], null, true));
             delete attrs[key];
           }
-          else if(self.get(key) && self.get(key).reset && attrs && attrs[key]) {
+          else if(self.isKeyAnUpdatableCollection(self, key, attrs)) {
             self.populateCollectionFromArray(attrs[key], self.get(key));
             delete attrs[key];
           }
@@ -45,6 +61,10 @@ Backbone.MeningesModel = Backbone.Model.extend({
     }
   },
 
+  isKeyAnUpdatableCollection: function (model, key, attrs) {
+    return model.get(key) && model.get(key).reset && attrs && attrs[key]
+  },
+
   populateCollectionFromArray: function (els, collection) {
     var modelsToRemove = [];
     var indexesToRemove= [];
@@ -52,7 +72,7 @@ Backbone.MeningesModel = Backbone.Model.extend({
       var matched = false;
       _(els).each(function (el, index) {
         if(model.equals && model.equals(el)) {
-          model.set(model.parse(el));
+          model.set(model.parse(el, null, true));
           matched = true;
           indexesToRemove.push(index);
         }

@@ -160,10 +160,16 @@ describe("meninges", function () {
       expect(topLevel.get("configuration").get("roles").at(0).get("authorizations").length).toEqual(1);
     });
 
-    xit("should remove the nested models that match no incoming data", function () {
-      var empty = {};
-      topLevel.set(topLevel.parse(empty));
-      expect(topLevel.get("configuration")).not.toBeDefined();
+    it("should remove the nested models that match no incoming data", function () {
+      var lessData = {
+        id: 1,
+        configuration: {
+          name: "empty"
+        }
+      };
+      topLevel.set(topLevel.parse(lessData));
+      expect(topLevel.get("configuration").get("name")).toEqual("empty");
+      expect(topLevel.get("configuration").get("roles")).not.toBeDefined();
     });
 
     it("should add new nested models as they come through", function () {
