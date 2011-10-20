@@ -33,7 +33,6 @@ Backbone.MeningesModel = Backbone.Model.extend({
     var self = this;
     _(keys).each(function (key) {
       if(!attrs[key]) {
-        console.log("unsetting " + key);
         self.unset(key);
       }
     });
