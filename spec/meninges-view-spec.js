@@ -4,6 +4,7 @@ describe("meninges", function () {
     return {
       id: 1,
       title: "Le Menon",
+      age: 28,
       author: {
         is_dead: true,
         name: "Platon",
@@ -60,6 +61,7 @@ describe("meninges", function () {
 
     render: function () {
       var html = '<input name="title" class="meninges" type="text" />' +
+          '<input name="age" class="meninges" type="text" />' +
           '<input name="author.name" class="meninges" type="text" />' +
           '<input name="author.country.name" class="meninges" type="text">"' +
           '<select name="author.country.continent" class="meninges">' +
@@ -150,6 +152,13 @@ describe("meninges", function () {
         spyOn(book, 'set');
         $("input[name='title']").val("Le Menon").trigger("blur");
         expect(book.set).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('when the value and the old value are different types', function () {
+      it('should compare a number to a string as a number', function () {
+        $("input[name='age']").val("23").trigger("blur");
+        expect(book.get("age")).toEqual(23);
       });
     });
 
