@@ -160,7 +160,14 @@ describe("meninges", function () {
         $("input[name='age']").val("23").trigger("blur");
         expect(book.get("age")).toEqual(23);
       });
+
+      it('should compare a float to a string as a float', function () {
+        $("input[name='age']").val("23.5").trigger("blur");
+        expect(book.get("age")).toEqual(23.5);
+      });
     });
+
+
 
     describe("collections (list of text inputs)", function () {
       it("should synchronise collections as well as models", function () {

@@ -31,7 +31,7 @@ Backbone.MeningesView = {
       var newValueHash = {};
       var oldValue = currentModel.get(_(pathItems).last());
       if (_(oldValue).isNumber()) {
-        value = parseInt(value);
+        value = parseFloat(value);
       }
       var sameValue = (oldValue === value);
       var nullToEmpty = (value === '' && oldValue === null);
