@@ -129,24 +129,6 @@ describe("meninges", function () {
 
     });
 
-    describe("when the value changes from null to empty string", function () {
-
-      beforeEach(function () {
-        var dataWithNullTitle = data();
-        dataWithNullTitle.title = null;
-        book = new Meninges.Book(dataWithNullTitle);
-        bookView = new Meninges.BookView({model: book});
-        bookView.render();
-      });
-
-      it("should not update the model", function () {
-        spyOn(book, 'set');
-        $("input[name='title']").val("").trigger("blur");
-        expect(book.set).not.toHaveBeenCalled();
-      });
-
-    });
-
     describe("when the value hasn't changed", function () {
       it("should not update the model", function () {
         spyOn(book, 'set');
@@ -165,9 +147,47 @@ describe("meninges", function () {
         $("input[name='age']").val("23.5").trigger("blur");
         expect(book.get("age")).toEqual(23.5);
       });
+
+      it('should compare a float to a string as a float', function () {
+
+        $("input[name='age']").val("23.5").trigger("blur");
+        expect(book.get("age")).toEqual(23.5);
+      });
+
+      it('should set an empty string to null when the original value is a number', function () {
+        $("input[name='age']").val("").trigger("blur");
+        expect(book.get("age")).toEqual(null);
+      });
     });
 
+    describe('null value from server', function () {
+      beforeEach(function () {
+        var dataWithNullTitle = data();
+        dataWithNullTitle.title = null;
+        book = new Meninges.Book(dataWithNullTitle);
+        bookView = new Meninges.BookView({model: book});
+        bookView.render();
+        expect(book.get('title')).toEqual(null);
+        expect(bookView._originalModel.get('title')).toEqual(null);
+      });
 
+      describe("when set to something else then to empty string", function () {
+        it("should set it back to null", function () {
+          $("input[name='title']").val("6").trigger("blur");
+          expect(book.get('title')).toEqual("6");
+          $("input[name='title']").val("").trigger("blur");
+          expect(book.get('title')).toEqual(null);
+        });
+      });
+
+      describe("when set to empty string", function () {
+        it("should not update the model", function () {
+          spyOn(book, 'set');
+          $("input[name='title']").val("").trigger("blur");
+          expect(book.set).not.toHaveBeenCalled();
+        });
+      });
+    });
 
     describe("collections (list of text inputs)", function () {
       it("should synchronise collections as well as models", function () {

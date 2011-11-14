@@ -19,10 +19,11 @@ Backbone.MeningesModel = Backbone.Model.extend({
     return o;
   },
 
+
   parse: function (attrs, xhr, isNested) {
     var attrsClone = _(attrs).clone();
     this.replaceWithMeningesAttributes(attrs);
-    if(isNested) {
+    if (isNested) {
       this.removeAttributesNotProvided(attrsClone);
     }
     return attrs;
@@ -32,10 +33,14 @@ Backbone.MeningesModel = Backbone.Model.extend({
     var keys = _(this.attributes).keys();
     var self = this;
     _(keys).each(function (key) {
-      if(!attrs[key]) {
+      if (!attrs[key]) {
         self.unset(key);
       }
     });
+  },
+
+  clone: function() {
+    return new this.constructor(this.toJSON());
   },
 
   replaceWithMeningesAttributes: function (attrs) {
@@ -44,15 +49,15 @@ Backbone.MeningesModel = Backbone.Model.extend({
       _(_(this.associations).keys()).each(function (key) {
         var obj = self.lookupConstructor(self.associations[key].model);
         if (obj !== undefined) {
-          if(self.get(key) && self.get(key).set) {
+          if (self.get(key) && self.get(key).set) {
             self.get(key).set(self.get(key).parse(attrs[key], null, true));
             delete attrs[key];
           }
-          else if(self.isKeyAnUpdatableCollection(self, key, attrs)) {
+          else if (self.isKeyAnUpdatableCollection(self, key, attrs)) {
             self.populateCollectionFromArray(attrs[key], self.get(key));
             delete attrs[key];
           }
-          else if(attrs && attrs[key]) {
+          else if (attrs && attrs[key]) {
             attrs[key] = new obj(attrs[key]);
           }
         }
@@ -66,26 +71,30 @@ Backbone.MeningesModel = Backbone.Model.extend({
 
   populateCollectionFromArray: function (els, collection) {
     var modelsToRemove = [];
-    var indexesToRemove= [];
+    var indexesToRemove = [];
     collection.each(function (model) {
       var matched = false;
       _(els).each(function (el, index) {
-        if(model.equals && model.equals(el)) {
+        if (model.equals && model.equals(el)) {
           model.set(model.parse(el, null, true));
           matched = true;
           indexesToRemove.push(index);
         }
       });
-      if(!matched) {
+      if (!matched) {
         modelsToRemove.push(model);
       }
     });
 
-    _(modelsToRemove).each(function (model) { collection.remove(model); });
-    _(indexesToRemove).each(function (index) { delete els[index]; });
+    _(modelsToRemove).each(function (model) {
+      collection.remove(model);
+    });
+    _(indexesToRemove).each(function (index) {
+      delete els[index];
+    });
 
     _(els).each(function (el) {
-      if(el) {
+      if (el) {
         collection.add(new collection.model(el));
       }
     });

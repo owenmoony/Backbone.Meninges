@@ -182,4 +182,13 @@ describe("meninges", function () {
 
     });
   });
+
+  describe('clone', function () {
+    it('should do a deep clone', function () {
+      var original = new SomeApp.TopLevel(data());
+      var clone = original.clone();
+      original.get('configuration').get('roles').first().set({'name': 'i am a function'});
+      expect(clone.get('configuration').get('roles').first().get('name')).toEqual("this and that");
+    });
+  });
 });
