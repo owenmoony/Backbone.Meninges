@@ -57,8 +57,8 @@ Backbone.MeningesView = {
 
     var render = o.render;
     o.render = function () {
-      render.call(this);
       this._originalModel = this.model.clone();
+      render.call(this);
       return this;
     }
     return Backbone.View.extend(o);
