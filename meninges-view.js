@@ -61,6 +61,36 @@ Backbone.MeningesView = {
       render.call(this);
       return this;
     }
+
+    var initialize = o.initialize;
+    o.initialize = function () {
+      initialize && initialize.call(this);
+      this._originalModel = this.model.clone();
+      var fetch = this.model.fetch;
+      var save = this.model.save;
+      var that = this;
+      this.model.fetch = function (options) {
+        options = options || {};
+        var onSuccess = options.success;
+        options.success = function (model, resp, options) {
+          that._originalModel = model.clone();
+          onSuccess && onSuccess(model, resp, options);
+        };
+
+        fetch.call(that.model, options);
+      }
+      this.model.save = function (attrs, options) {
+        options = options || {};
+        var onSuccess = options.success;
+        options.success = function (model, resp, options) {
+          that._originalModel = model.clone();
+          onSuccess && onSuccess(model, resp, options);
+        };
+
+        save.call(that.model, attrs, options);
+      }
+    };
+
     return Backbone.View.extend(o);
   }
 };

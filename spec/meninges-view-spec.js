@@ -189,6 +189,43 @@ describe("meninges", function () {
       });
     });
 
+    describe('original model', function () {
+      var originalModel;
+
+      beforeEach(function () {
+        book = new Meninges.Book(data);
+        bookView = new Meninges.BookView({model: book});
+        spyOn(Backbone, 'sync').andReturn('');
+        originalModel = bookView._originalModel;
+      });
+
+      it("should set the originalModel on initialize", function () {
+        expect(originalModel).toBeDefined();
+      });
+
+      describe('making a change to model', function () {
+        beforeEach(function () {
+          expect(originalModel.get('age')).not.toEqual(30);
+
+          book.set({'age': 30});
+        });
+
+        it ('should set the original model when saving a model', function () {
+          book.save();
+          Backbone.sync.mostRecentCall.args[2].success(book.toJSON());
+          expect(bookView._originalModel).not.toEqual(originalModel);
+          expect(bookView._originalModel.get('age')).toEqual(30);
+        });
+
+        it('should set the original model when fetching a model', function () {
+          book.fetch();
+          Backbone.sync.mostRecentCall.args[2].success(book.toJSON());
+          expect(bookView._originalModel).not.toEqual(originalModel);
+          expect(bookView._originalModel.get('age')).toEqual(30);
+        });
+      });
+    });
+
     describe("collections (list of text inputs)", function () {
       it("should synchronise collections as well as models", function () {
         $($("input[name='links:0.type']")[1]).click();
