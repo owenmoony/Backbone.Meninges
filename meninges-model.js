@@ -19,7 +19,6 @@ Backbone.MeningesModel = Backbone.Model.extend({
     return o;
   },
 
-
   parse: function (attrs, xhr, isNested) {
     var attrsClone = _(attrs).clone();
     this.replaceWithMeningesAttributes(attrs);
