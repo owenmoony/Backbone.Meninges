@@ -60,7 +60,7 @@ Backbone.MeningesView = {
       this._originalModel = this.model.clone();
       render.call(this);
       return this;
-    }
+    };
 
     var initialize = o.initialize;
     o.initialize = function () {
