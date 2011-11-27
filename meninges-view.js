@@ -24,18 +24,27 @@ Backbone.MeningesView = {
     o.events["change input.meninges[type='radio']"] = 'updateAttributeForEvent';
     o.events["change select.meninges"] = 'updateAttributeForEvent';
 
-    o.updateAttribute = function(pathItems, value, currentModel) {
+    o.updateAttribute = function(pathItems, value) {
+      var currentModel = this.model;
+      var originalModel = this._originalModel;
       for (var i = 0; i < pathItems.length - 1; i++) {
         currentModel = findNextModel(currentModel, pathItems[i]);
+        originalModel = findNextModel(originalModel, pathItems[i]);
       }
+
       var newValueHash = {};
       var oldValue = currentModel.get(_(pathItems).last());
+      var originalValue = originalModel.get(_(pathItems).last());
+      if (_(originalValue).isNumber()) {
+        value = parseFloat(value) || null;
+      }
+      if (value === '' && originalValue === null) {
+        value = null;
+      }
+
       var sameValue = (oldValue === value);
-      var nullToEmpty = (value === '' && oldValue === null);
-
       newValueHash[_(pathItems).last()] = value;
-
-      if (!sameValue && !nullToEmpty) {
+      if (!sameValue) {
         currentModel.set(newValueHash);
       }
     };
@@ -43,10 +52,45 @@ Backbone.MeningesView = {
     o.updateAttributeForEvent = function (event) {
       var pathItems = event.target.name.split(".");
       var value = extractValue(event.target);
-      o.updateAttribute(pathItems, value, this.model)
+      o.updateAttribute.call(this, pathItems, value)
+    };
+
+    var render = o.render;
+    o.render = function () {
+      this._originalModel = this.model.clone();
+      render.call(this);
+      return this;
+    }
+
+    var initialize = o.initialize;
+    o.initialize = function () {
+      initialize && initialize.call(this);
+      this._originalModel = this.model.clone();
+      var fetch = this.model.fetch;
+      var save = this.model.save;
+      var that = this;
+      this.model.fetch = function (options) {
+        options = options || {};
+        var onSuccess = options.success;
+        options.success = function (model, resp, options) {
+          that._originalModel = model.clone();
+          onSuccess && onSuccess(model, resp, options);
+        };
+
+        fetch.call(that.model, options);
+      }
+      this.model.save = function (attrs, options) {
+        options = options || {};
+        var onSuccess = options.success;
+        options.success = function (model, resp, options) {
+          that._originalModel = model.clone();
+          onSuccess && onSuccess(model, resp, options);
+        };
+
+        save.call(that.model, attrs, options);
+      }
     };
 
     return Backbone.View.extend(o);
-
   }
 };

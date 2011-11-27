@@ -4,6 +4,7 @@ describe("meninges", function () {
     return {
       id: 1,
       title: "Le Menon",
+      age: 28,
       author: {
         is_dead: true,
         name: "Platon",
@@ -60,6 +61,7 @@ describe("meninges", function () {
 
     render: function () {
       var html = '<input name="title" class="meninges" type="text" />' +
+          '<input name="age" class="meninges" type="text" />' +
           '<input name="author.name" class="meninges" type="text" />' +
           '<input name="author.country.name" class="meninges" type="text">"' +
           '<select name="author.country.continent" class="meninges">' +
@@ -127,29 +129,100 @@ describe("meninges", function () {
 
     });
 
-    describe("when the value changes from null to empty string", function () {
+    describe("when the value hasn't changed", function () {
+      it("should not update the model", function () {
+        spyOn(book, 'set');
+        $("input[name='title']").val("Le Menon").trigger("blur");
+        expect(book.set).not.toHaveBeenCalled();
+      });
+    });
 
+    describe('when the value and the old value are different types', function () {
+      it('should compare a number to a string as a number', function () {
+        $("input[name='age']").val("23").trigger("blur");
+        expect(book.get("age")).toEqual(23);
+      });
+
+      it('should compare a float to a string as a float', function () {
+        $("input[name='age']").val("23.5").trigger("blur");
+        expect(book.get("age")).toEqual(23.5);
+      });
+
+      it('should compare a float to a string as a float', function () {
+
+        $("input[name='age']").val("23.5").trigger("blur");
+        expect(book.get("age")).toEqual(23.5);
+      });
+
+      it('should set an empty string to null when the original value is a number', function () {
+        $("input[name='age']").val("").trigger("blur");
+        expect(book.get("age")).toEqual(null);
+      });
+    });
+
+    describe('null value from server', function () {
       beforeEach(function () {
         var dataWithNullTitle = data();
         dataWithNullTitle.title = null;
         book = new Meninges.Book(dataWithNullTitle);
         bookView = new Meninges.BookView({model: book});
         bookView.render();
+        expect(book.get('title')).toEqual(null);
+        expect(bookView._originalModel.get('title')).toEqual(null);
       });
 
-      it("should not update the model", function () {
-        spyOn(book, 'set');
-        $("input[name='title']").val("").trigger("blur");
-        expect(book.set).not.toHaveBeenCalled();
+      describe("when set to something else then to empty string", function () {
+        it("should set it back to null", function () {
+          $("input[name='title']").val("6").trigger("blur");
+          expect(book.get('title')).toEqual("6");
+          $("input[name='title']").val("").trigger("blur");
+          expect(book.get('title')).toEqual(null);
+        });
       });
 
+      describe("when set to empty string", function () {
+        it("should not update the model", function () {
+          spyOn(book, 'set');
+          $("input[name='title']").val("").trigger("blur");
+          expect(book.set).not.toHaveBeenCalled();
+        });
+      });
     });
 
-    describe("when the value hasn't changed", function () {
-      it("should not update the model", function () {
-        spyOn(book, 'set');
-        $("input[name='title']").val("Le Menon").trigger("blur");
-        expect(book.set).not.toHaveBeenCalled();
+    describe('original model', function () {
+      var originalModel;
+
+      beforeEach(function () {
+        book = new Meninges.Book(data);
+        bookView = new Meninges.BookView({model: book});
+        spyOn(Backbone, 'sync').andReturn('');
+        originalModel = bookView._originalModel;
+      });
+
+      it("should set the originalModel on initialize", function () {
+        expect(originalModel).toBeDefined();
+      });
+
+      describe('making a change to model', function () {
+        beforeEach(function () {
+          expect(originalModel.get('age')).not.toEqual(30);
+
+          book.set({'age': 30});
+        });
+
+        it ('should set the original model when saving a model', function () {
+          book.save();
+          Backbone.sync.mostRecentCall.args[2].success(book.toJSON());
+          expect(bookView._originalModel).not.toEqual(originalModel);
+          expect(bookView._originalModel.get('age')).toEqual(30);
+        });
+
+        it('should set the original model when fetching a model', function () {
+          book.fetch();
+          Backbone.sync.mostRecentCall.args[2].success(book.toJSON());
+          expect(bookView._originalModel).not.toEqual(originalModel);
+          expect(bookView._originalModel.get('age')).toEqual(30);
+        });
       });
     });
 
