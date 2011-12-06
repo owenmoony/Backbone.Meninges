@@ -48,7 +48,7 @@ Backbone.MeningesModel = Backbone.Model.extend({
       _(_(this.associations).keys()).each(function (key) {
         var obj = self.lookupConstructor(self.associations[key].model);
         if (obj !== undefined) {
-          if (self.get(key) && self.get(key).set) {
+          if (self.get(key) && self.get(key) instanceof Backbone.Model) {
             self.get(key).set(self.get(key).parse(attrs[key], null, true));
             delete attrs[key];
           }
@@ -65,7 +65,7 @@ Backbone.MeningesModel = Backbone.Model.extend({
   },
 
   isKeyAnUpdatableCollection: function (model, key, attrs) {
-    return model.get(key) && model.get(key).reset && attrs && attrs[key]
+    return model.get(key) && (model.get(key) instanceof Backbone.Collection) && attrs && attrs[key]
   },
 
   populateCollectionFromArray: function (els, collection) {
