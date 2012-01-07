@@ -1,4 +1,4 @@
-describe("meninges", function () {
+describe("meninges models", function () {
 
   var data = function () {
     // nested model (configuration) with collection (roles) 

@@ -1,4 +1,4 @@
-describe("meninges", function () {
+describe("meninges views", function () {
 
   var data = function () {
     return {
