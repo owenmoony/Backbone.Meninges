@@ -57,7 +57,9 @@ Backbone.MeningesModel = Backbone.Model.extend({
             delete attrs[key];
           }
           else if (attrs && attrs[key]) {
-            attrs[key] = new obj(attrs[key]);
+            var model = new obj(attrs[key]);
+            model.parent = self;
+            attrs[key] = model;
           }
         }
       });
@@ -71,6 +73,7 @@ Backbone.MeningesModel = Backbone.Model.extend({
   populateCollectionFromArray: function (els, collection) {
     var modelsToRemove = [];
     var indexesToRemove = [];
+    var self = this;
     collection.each(function (model) {
       var matched = false;
       _(els).each(function (el, index) {
@@ -94,7 +97,9 @@ Backbone.MeningesModel = Backbone.Model.extend({
 
     _(els).each(function (el) {
       if (el) {
-        collection.add(new collection.model(el));
+        var model = new collection.model(el);
+        model.parent = self;
+        collection.add(model);
       }
     });
   },

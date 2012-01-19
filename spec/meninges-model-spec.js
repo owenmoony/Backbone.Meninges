@@ -93,7 +93,12 @@ describe("meninges models", function () {
     it("should load nested collections", function () {
       expect(topLevel.get("configuration").get("roles").at).toBeDefined();
     });
-    
+
+    it("should have a parent property", function () {
+      var parent = topLevel.get("configuration");
+      expect(parent.get("roles").parent).toEqual(parent);
+    });
+
     it("should load model in the nested collections", function () {
       expect(topLevel.get("configuration").get("roles").at(0).get).toBeDefined();
     });
